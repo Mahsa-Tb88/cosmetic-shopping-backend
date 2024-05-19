@@ -8,8 +8,8 @@ export async function registerUser(req, res) {
     let role = "user";
     if (firstname && lastname && username && password) {
       if (
-        req.role == "admin" ||
-        (req.role == "Main Admin" && req.body.role == "admin")
+        (req.role == "admin" || req.role == "Main Admin") &&
+        req.body.role == "admin"
       ) {
         role = "admin";
       }

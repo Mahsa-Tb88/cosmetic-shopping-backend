@@ -27,16 +27,18 @@ export async function getProducts(req, res) {
     }
   }
   try {
-    const products = await products
-      .find(query)
+    const all = await Product.countDocuments();
+    const filtered = await Product.countDocuments(query);
+    const products = await Product.find(query)
       .limit(limit)
       .skip(startProduct)
-      .sort(price == "desc" ? "updatedAt" : sort);
+      .sort(price == "desc" ? "updatedAt" : sort)
+      .populate("category");
     res.json({
       success: true,
       body: products,
       message: "products fetch successfully!",
-      filteredProducts: {},
+      filteredProducts: { all, filtered },
       code: 201,
     });
   } catch (e) {
@@ -79,20 +81,26 @@ export async function createProduct(req, res) {
   }
 
   try {
+    const findedProduct = await Product.findOne({ title });
+    if (findedProduct) {
+      return res.fail("This product title already exist!");
+    }
     const findedCategory = await Category.findOne({ slug: category });
     if (findedCategory) {
       const newCategory = await Product.create({
         title,
         category: findedCategory._id,
         price,
-        desc,
+        description,
         image,
       });
-      res.success("New product was created successfully!");
+      res.success("New product was created successfully!", newCategory);
     } else {
       return res.fail("This category was not found!");
     }
-  } catch (e) {}
+  } catch (e) {
+    res.fail(e.message, 500);
+  }
 }
 export async function updateProduct(req, res) {
   const isValid = mongoose.isValidObjectId(req.params.id);

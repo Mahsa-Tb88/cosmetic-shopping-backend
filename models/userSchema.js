@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
@@ -23,13 +23,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
-    pendingShopping: {
-      type: [Object],
-      default: [],
-    },
-    shopping: {
-      type: [Object],
-      default: [],
+    orders: {
+      type: Schema.Types.ObjectId,
+      ref: "Order",
     },
   },
   { timestamps: true }

@@ -12,12 +12,21 @@ const storage = multer.diskStorage({
     if (!allowedExtensions.includes(extension)) {
       cb({ code: "INVALID_EXTENSION" });
     } else {
-      cb(null, path.join(__dirname, "../", "uploads"));
+      if (file.originalname.toLowerCase().includes("blog")) {
+        req.folder = "blogs";
+        cb(null, path.join(__dirname, "../", "uploads/blogs"));
+      } else if (file.originalname.toLowerCase().includes("product")) {
+        req.folder = "products";
+        cb(null, path.join(__dirname, "../", "uploads/products"));
+      } else {
+        req.folder = "others";
+        cb(null, path.join(__dirname, "../", "uploads/others"));
+      }
     }
   },
   filename: function (req, file, cb) {
     const extension = file.originalname.toLowerCase().split(".").pop();
-    const fullname = Date.now() + "." + extension;
+    const fullname = file.originalname + Date.now() + "." + extension;
     cb(null, fullname);
   },
 });

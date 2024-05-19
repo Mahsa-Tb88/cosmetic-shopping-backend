@@ -59,12 +59,12 @@ export async function createBlog(req, res) {
     return res.fail("Please select an image");
   }
   try {
-    const findedBlog = await Blog.findOne({ slug });
+    const findedBlog = await Blog.findOne({ title });
     if (findedBlog) {
-      return res.fail("The slog of blog already exist!");
+      return res.fail("The title of blog already exist!");
     }
     const newBlog = await Blog.create({ title, slug, description, image });
-    req.success("New blog was created successfully!", newBlog);
+    res.success("New blog was created successfully!", newBlog);
   } catch (e) {
     res.fail(e.message, 500);
   }
@@ -83,9 +83,9 @@ export async function updateBlog(req, res) {
       const description = req.body.description || blog.description;
       const image = req.body.image || blog.image;
 
-      const findedBlog = await Blog.findOne({ slug: req.body.slug });
+      const findedBlog = await Blog.findOne({ title: req.body.title });
       if (findedBlog && findedBlog._id !== blog._id) {
-        return res.fail("This slug already exist!");
+        return res.fail("This title already exist!");
       }
 
       const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, {
@@ -94,12 +94,12 @@ export async function updateBlog(req, res) {
         description,
         image,
       });
-      req.success("The blog was updated successfully!", updatedBlog);
+      res.success("The blog was updated successfully!", updatedBlog);
     } else {
       res.fail("The blog was not found!");
     }
   } catch (e) {
-    req.fail(e.message, 500);
+    res.fail(e.message, 500);
   }
 }
 export async function deleteBlog(req, res) {
@@ -111,7 +111,7 @@ export async function deleteBlog(req, res) {
   try {
     const blog = await Blog.findByIdAndDelete(req.params.id);
     if (blog) {
-      req.success("The blog was deleted succesfully!");
+      res.success("The blog was deleted succesfully!");
     } else {
       res.fail("This blog was not found!", 401);
     }

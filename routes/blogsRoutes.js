@@ -1,4 +1,5 @@
 import express from "express";
+import { isAdmin } from "../middlewares/authMiddleWare.js";
 import {
   createBlog,
   deleteBlog,
@@ -11,8 +12,8 @@ const router = express.Router();
 
 router.get("/", getBlogs);
 router.get("/", getBlogById);
-router.post("/:id", createBlog);
-router.put("/:id", updateBlog);
-router.get("/:id", deleteBlog);
+router.post("/", isAdmin, createBlog);
+router.put("/:id", isAdmin, updateBlog);
+router.delete("/:id", isAdmin, deleteBlog);
 
 export default router;

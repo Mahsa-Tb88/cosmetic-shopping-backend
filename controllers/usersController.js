@@ -37,31 +37,37 @@ export async function updateUser(req, res) {
       const role = req.body.role ?? user.role;
       const pendingShopping = req.body.pendingShopping ?? user.pendingShopping;
       const shopping = req.body.shopping ?? user.shopping;
-
-      if (req.role !== "admin" && req.userId != user._id.toString()) {
-        return res.fail("You dont have allowance for updating");
+      console.log(req.role);
+      if (req.role !== "Main Admin" && req.userId != user._id.toString()) {
+        return res.fail("You don't have permission to update...");
       }
-      if (role === "admin" && req.role !== "admin") {
-        return res.fail("You dont have allowance for updating");
+      if (role === "Main Admin" && req.role !== "Main Admin") {
+        return res.fail("You don't have permission to update.");
       }
-      if(req.username !== req.body.username){
-        return res.fail("You can not change your username!");
-
+      if (
+        req.username !== req.body.username &&
+        req.userId == user._id.toString()
+      ) {
+        return res.fail("You can not change the username!");
       }
       let hashPassword = user.password;
       if (password) {
         const newPassword = bcryptjs.hash(password, process.env.SECRET_KEY);
         hashPassword = newPassword;
       }
-      const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-        firstname,
-        lastname,
-        username,
-        password: hashPassword,
-        role,
-        pendingShopping,
-        shopping,
-      });
+      const updatedUser = await User.findByIdAndUpdate(
+        req.params.id,
+        {
+          firstname,
+          lastname,
+          username,
+          password: hashPassword,
+          role,
+          pendingShopping,
+          shopping,
+        },
+        { new: true }
+      );
 
       res.success("User was updated successfully!", updatedUser);
     } else {
