@@ -3,7 +3,7 @@ import User from "../models/userSchema.js";
 
 export async function checkToken(req, res, next) {
   if (req.headers.authorization) {
-    const token = req.headers.authorization.subString(7);
+    const token = req.headers.authorization.substring(7);
     try {
       const decode = jwt.verify(token, process.env.SECRET_KEY);
       if (decode) {
@@ -21,10 +21,10 @@ export async function checkToken(req, res, next) {
 }
 
 export async function isAdmin(req, res, next) {
-  if (req.role == "admin") {
+  if (req.role == "admin" || req.role == "Main Admin") {
     next();
   } else {
-    res.fail("You dont have allowance for going through", 401);
+    res.fail("You don't have permission to go through!", 401);
   }
 }
 
@@ -32,6 +32,6 @@ export async function isLoggedIn(req, res, next) {
   if (req.username) {
     next();
   } else {
-    res.fail("You should log in first!", 402);
+    res.fail("Please log in first!", 402);
   }
 }

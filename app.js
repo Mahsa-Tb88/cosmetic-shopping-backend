@@ -7,8 +7,9 @@ import corsMiddleWare from "./middlewares/corsMiddleWare.js";
 import responseMiddleWare from "./middlewares/responseMiddleWare.js";
 import { checkToken } from "./middlewares/authMiddleWare.js";
 
-import express, { response } from "express";
+import express from "express";
 import mongoose from "mongoose";
+import bcryptjs from "bcryptjs";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -18,6 +19,7 @@ import blogsRoutes from "./routes/blogsRoutes.js";
 import categoriesRoutes from "./routes/categoriesRoutes.js";
 import usersRoutes from "./routes/usersRoutes.js";
 import micsRoutes from "./routes/micsRoutes.js";
+import User from "./models/userSchema.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -43,6 +45,18 @@ try {
   app.listen(3000, () => {
     console.log("Server is running on http://localhost3000");
   });
+
+  const findMainAdmin = await User.findOne({ username: "MainAdmin" });
+  const dashedPassword = await bcryptjs.hash("123Admin", 10);
+  if (!findMainAdmin) {
+    await User.create({
+      firstname: "Mahsa",
+      lastname: "Tabesh",
+      username: "MainAdmin",
+      password: dashedPassword,
+      role: "Main Admin",
+    });
+  }
 } catch (e) {
   console.log(e.message);
 }

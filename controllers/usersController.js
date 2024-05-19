@@ -30,17 +30,23 @@ export async function updateUser(req, res) {
   try {
     const user = await User.findById(req.params.id);
     if (user) {
-      const firstname = req.querry.firstname ?? user.firstname;
-      const lastname = req.querry.lastname ?? user.lastname;
-      const username = req.querry.username ?? user.username;
-      const password = req.querry.password ?? "";
-      const role = req.querry.role ?? user.role;
+      const firstname = req.body.firstname ?? user.firstname;
+      const lastname = req.body.lastname ?? user.lastname;
+      const username = req.body.username ?? user.username;
+      const password = req.body.password ?? "";
+      const role = req.body.role ?? user.role;
+      const pendingShopping = req.body.pendingShopping ?? user.pendingShopping;
+      const shopping = req.body.shopping ?? user.shopping;
 
       if (req.role !== "admin" && req.userId != user._id.toString()) {
         return res.fail("You dont have allowance for updating");
       }
       if (role === "admin" && req.role !== "admin") {
         return res.fail("You dont have allowance for updating");
+      }
+      if(req.username !== req.body.username){
+        return res.fail("You can not change your username!");
+
       }
       let hashPassword = user.password;
       if (password) {
@@ -53,9 +59,11 @@ export async function updateUser(req, res) {
         username,
         password: hashPassword,
         role,
+        pendingShopping,
+        shopping,
       });
 
-      res.success("User was updated successfully!");
+      res.success("User was updated successfully!", updatedUser);
     } else {
       res.fail(" user not founded", 404);
     }

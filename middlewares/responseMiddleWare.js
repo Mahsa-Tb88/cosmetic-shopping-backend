@@ -1,6 +1,6 @@
 export default function responseMiddleWare(req, res, next) {
   res.success = (message = " ", body = null, code = 200) => {
-    res.statyus(code).json({
+    res.status(code).json({
       success: true,
       body,
       message,

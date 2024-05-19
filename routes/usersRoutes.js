@@ -1,5 +1,5 @@
 import express from "express";
-import { isAdmin } from "../middlewares/authMiddleWare.js";
+import { isAdmin, isLoggedIn } from "../middlewares/authMiddleWare.js";
 import {
   deleteUser,
   getUsers,
@@ -9,7 +9,7 @@ import {
 const router = express.Router();
 
 router.get("/", isAdmin, getUsers);
-router.put("/:id", updateUser);
-router.delete("/:id", deleteUser);
+router.put("/:id", isLoggedIn, updateUser);
+router.delete("/:id", isAdmin, deleteUser);
 
 export default router;
