@@ -2,7 +2,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import multer from "multer";
 
-const allowedExtensions = ["png", "jpg", "webp", "jpeg"];
+const allowedExtensions = ["png", "jpg", "webp", "jpeg", "svg"];
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
