@@ -24,7 +24,9 @@ export async function registerUser(req, res) {
             password: dashPassword,
             role,
           });
+
           newUser.password = undefined;
+
           res.success("Your registration was done successfully!", newUser);
         } else {
           res.fail("This username already exist!", 401);
@@ -52,6 +54,7 @@ export async function loginUser(req, res, next) {
             expiresIn: "1d",
           });
           user.password = undefined;
+
           res.success("Logged in successfully!", { user, token });
         } else {
           res.fail("Username or Password is not correct!", 402);

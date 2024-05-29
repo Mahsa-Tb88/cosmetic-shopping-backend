@@ -3,15 +3,15 @@ import Category from "../models/categorySchema.js";
 import Product from "../models/productSchema.js";
 
 export async function getProducts(req, res) {
-  const page = req.query.page;
-  const limit = req.query.limit;
+  const page = req.query.page ?? 1;
+  const limit = req.query.limit ?? 6;
   const category = req.query.category ?? "";
-  const sort = req.query.sort ?? "createdAt";
-  const price = req.query.price ?? "desc";
-  const startProduct = (page - 1) * limit;
+  const sort = req.query.sort ?? "updatedAt";
+  const order = req.query.order ?? "desc";
   const q = req.query.q ?? "";
+  const startProduct = (page - 1) * limit;
   const query = {
-    $or: [{ title: RegExp(q, "i"), description: RegExp(q, "i") }],
+    $or: [{ title: RegExp(q, "i") }, { description: RegExp(q, "i") }],
   };
 
   if (category) {
@@ -32,13 +32,13 @@ export async function getProducts(req, res) {
     const products = await Product.find(query)
       .limit(limit)
       .skip(startProduct)
-      .sort(price == "desc" ? "updatedAt" : sort)
+      .sort(order == "asc" ? sort : "-" + sort)
       .populate("category");
     res.json({
       success: true,
       body: products,
       message: "products fetch successfully!",
-      filteredProducts: { all, filtered },
+      totalProducts: { all, filtered },
       code: 201,
     });
   } catch (e) {
@@ -85,7 +85,7 @@ export async function createProduct(req, res) {
     if (findedProduct) {
       return res.fail("This product title already exist!");
     }
-    const findedCategory = await Category.findOne({ slug: category });
+    const findedCategory = await Category.findById(category);
     if (findedCategory) {
       const newCategory = await Product.create({
         title,

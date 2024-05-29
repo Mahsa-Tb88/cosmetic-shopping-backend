@@ -19,6 +19,9 @@ import blogsRoutes from "./routes/blogsRoutes.js";
 import categoriesRoutes from "./routes/categoriesRoutes.js";
 import usersRoutes from "./routes/usersRoutes.js";
 import micsRoutes from "./routes/micsRoutes.js";
+import msgRoutes from "./routes/msgRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 import User from "./models/userSchema.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -36,6 +39,9 @@ app.use("/products", productsRoutes);
 app.use("/blogs", blogsRoutes);
 app.use("/categories", categoriesRoutes);
 app.use("/users", usersRoutes);
+app.use("/", msgRoutes);
+app.use("/order", orderRoutes);
+app.use("/cart", cartRoutes);
 app.use(micsRoutes);
 
 try {

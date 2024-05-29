@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose  from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
@@ -22,10 +22,6 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       default: "user",
-    },
-    orders: {
-      type: Schema.Types.ObjectId,
-      ref: "Order",
     },
   },
   { timestamps: true }

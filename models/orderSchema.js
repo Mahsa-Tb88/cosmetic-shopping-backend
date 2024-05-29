@@ -1,25 +1,33 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const orderSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
-    NumberOfOrder: {
-      type: Number,
-      default: 1,
+    cartId: {
+      type: Schema.Types.ObjectId,
+      ref: "Cart",
+      required: true,
     },
-    price: {
+    shops: {
+      type: [
+        {
+          title: String,
+          quantity: Number,
+          price: Number,
+          totalPriceItem: Number,
+        },
+      ],
+    },
+    totalPriceOrder: {
       type: Number,
       required: true,
     },
-    totalPrice: {
+    transactionNumber: {
       type: Number,
-      required: true,
-    },
-    status: {
-      type: String,
       required: true,
     },
   },

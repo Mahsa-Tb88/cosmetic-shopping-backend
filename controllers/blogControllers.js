@@ -3,20 +3,25 @@ import Blog from "../models/blogSchema.js";
 
 export async function getBlogs(req, res) {
   const page = req.query.page ?? 1;
-  const limit = req.query.limit ?? 5;
+  const limit = req.query.limit ?? 6;
   const startBlog = (page - 1) * limit;
   const search = req.query.search ?? "";
-  const query = {
-    $or: [{ title: RegExp(search, "i"), description: RegExp(search, "i") }],
-  };
+
   try {
-    const blogs = await Blog.find(query).limit(limit).skip(startBlog);
+    const query = {
+      $or: [
+        { title: RegExp(search, "i") },
+        { description: RegExp(search, "i") },
+      ],
+    };
+    const blogs = await Blog.find(query).skip(startBlog).limit(limit);
     const all = await Blog.countDocuments();
     const filtered = await Blog.countDocuments(query);
     res.json({
       success: true,
-      message: "Blogs fetch successully!",
       body: blogs,
+
+      message: "Blogs fetch successully!",
       totalBlogs: {
         all,
         filtered,
@@ -47,6 +52,8 @@ export async function createBlog(req, res) {
   const title = req.body.title;
   const slug = req.body.slug;
   const description = req.body.description;
+  const items = req.body.items || [];
+  const details = req.body.details || ["body care", "DR.Mike Serv"];
   const image = req.body.image;
 
   if (!title) {
@@ -63,7 +70,14 @@ export async function createBlog(req, res) {
     if (findedBlog) {
       return res.fail("The title of blog already exist!");
     }
-    const newBlog = await Blog.create({ title, slug, description, image });
+    const newBlog = await Blog.create({
+      title,
+      slug,
+      description,
+      items,
+      details,
+      image,
+    });
     res.success("New blog was created successfully!", newBlog);
   } catch (e) {
     res.fail(e.message, 500);
@@ -81,10 +95,11 @@ export async function updateBlog(req, res) {
       const title = req.body.title || blog.title;
       const slug = req.body.slug || blog.slug;
       const description = req.body.description || blog.description;
-      const image = req.body.image || blog.image;
-
+      const items = req.body.items || blog.items;
+      const details = req.body.details || blog.details;
+      const image = req.body.image ?? "";
       const findedBlog = await Blog.findOne({ title: req.body.title });
-      if (findedBlog && findedBlog._id !== blog._id) {
+      if (findedBlog && findedBlog._id.toString() != blog._id) {
         return res.fail("This title already exist!");
       }
 
@@ -92,6 +107,8 @@ export async function updateBlog(req, res) {
         title,
         slug,
         description,
+        items,
+        details,
         image,
       });
       res.success("The blog was updated successfully!", updatedBlog);
@@ -107,7 +124,6 @@ export async function deleteBlog(req, res) {
   if (!isValid) {
     return res.fail("Invalid Blog Id");
   }
-
   try {
     const blog = await Blog.findByIdAndDelete(req.params.id);
     if (blog) {

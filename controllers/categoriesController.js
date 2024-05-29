@@ -6,7 +6,17 @@ export async function getCategories(req, res) {
   const startCategory = (page - 1) * limit;
   try {
     const categories = await Category.find().limit(limit).skip(startCategory);
-    res.success("Category fetch successfully!", categories);
+    const all = await Category.countDocuments();
+    res.json({
+      success: true,
+      body: categories,
+      message: "category fetched successfully!",
+      code: 200,
+      totalCategories: {
+        all,
+        filtered: all,
+      },
+    });
   } catch (e) {
     res.fail(e.message, 500);
   }
@@ -74,16 +84,15 @@ export async function updateCategory(req, res) {
 
 export async function deleteCategory(req, res) {
   try {
+    const findProducts = await Product.findOne({
+      category: req.params.id,
+    });
+    if (findProducts) {
+      return res.fail("The category includes at least one product!", 406);
+    }
     const category = await Category.findByIdAndDelete(req.params.id);
     if (category) {
-      const findProducts = await Product.findOne({
-        category: category._id,
-      });
-      if (!findProducts) {
-        res.success("category was deleted successfully");
-      } else {
-        res.fail("The category includes at least one product!");
-      }
+      res.success("category was deleted successfully");
     } else {
       res.fail("This Category was not found", 401);
     }
