@@ -10,14 +10,14 @@ export async function getUsers(req, res) {
       .limit(limit)
       .skip(startUser)
       .select("-password");
-    const all = users.length;
+    const all = await User.countDocuments();
     res.json({
       success: true,
       body: {
         users,
         totalUsers: {
           all,
-          filtered: all,
+          filtered: users.length,
         },
         message: "All users fetched successfully!",
         code: 200,
