@@ -67,3 +67,37 @@ export async function loginUser(req, res, next) {
     }
   }
 }
+
+export async function authGoogle(req, res) {
+  const { email, fullName } = req.body;
+  console.log(fullName);
+  try {
+    const user = await User.findOne({ username: email });
+    const token = jwt.sign({ username: email }, process.env.SECRET_KEY, {
+      expiresIn: "1d",
+    });
+
+    if (user) {
+      user.password = undefined;
+      res.success("You logged in successfully!", { user, token });
+    } else {
+      const password =
+        Math.random().toString(36).slice(2) +
+        Math.random().toString(36).toUpperCase().slice(2);
+      const hashPassword = await bcryptjs.hash(password, 10);
+      const firstname = fullName.split(" ")[0];
+      const lastname = fullName.split(" ")[1] || "empty";
+      const newUser = await User.create({
+        firstname,
+        lastname,
+        username: email,
+        password: hashPassword,
+        role: "user",
+      });
+      newUser.password = undefined;
+      res.success("New User created successfully!", { newUser, token });
+    }
+  } catch (e) {
+    res.fail(e.message, 500);
+  }
+}

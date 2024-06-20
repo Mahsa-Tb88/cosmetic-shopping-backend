@@ -31,6 +31,7 @@ app.use(express.json());
 app.use(corsMiddleWare);
 app.use(responseMiddleWare);
 app.use(checkToken);
+app.use(micsRoutes);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -42,7 +43,6 @@ app.use("/users", usersRoutes);
 app.use("/", msgRoutes);
 app.use("/order", orderRoutes);
 app.use("/cart", cartRoutes);
-app.use(micsRoutes);
 
 try {
   await mongoose.connect(process.env.MONGO_URL);
