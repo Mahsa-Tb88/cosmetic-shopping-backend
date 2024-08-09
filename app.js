@@ -36,10 +36,10 @@ app.use(micsRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/auth", authRoutes);
-app.use("/products", productsRoutes);
-app.use("/blogs", blogsRoutes);
-app.use("/categories", categoriesRoutes);
-app.use("/users", usersRoutes);
+app.use("/api/products", productsRoutes);
+app.use("/api/blogs", blogsRoutes);
+app.use("/api/categories", categoriesRoutes);
+app.use("/api/users", usersRoutes);
 app.use("/", msgRoutes);
 app.use("/order", orderRoutes);
 app.use("/cart", cartRoutes);
@@ -51,9 +51,8 @@ try {
   app.listen(3000, () => {
     console.log("Server is running on http://localhost3000");
   });
-
   const findMainAdmin = await User.findOne({ username: "MainAdmin" });
-  const dashedPassword = await bcryptjs.hash("123Admin", 10);
+  const dashedPassword = await bcryptjs.hash("admin", 10);
   if (!findMainAdmin) {
     await User.create({
       firstname: "Mahsa",
